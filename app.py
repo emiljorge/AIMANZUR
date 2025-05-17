@@ -12,6 +12,8 @@ def whatsapp():
     incoming_msg = request.form.get("Body", "")
     sender = request.form.get("From", "")
 
+    print("Mensaje recibido:", incoming_msg)
+
     if not incoming_msg:
         return "No message received", 400
 
@@ -19,14 +21,14 @@ def whatsapp():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # CAMBIADO
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
         )
         reply = response.choices[0].message.content.strip()
-   except Exception as e:
-    print("Error OpenAI:", e)
-    reply = "Ocurrió un error al procesar el mensaje. Intenta más tarde."
+    except Exception as e:
+        print("Error OpenAI:", e)
+        reply = "Ocurrió un error al procesar el mensaje. Intenta más tarde."
 
     twiml = MessagingResponse()
     twiml.message(reply)
@@ -43,12 +45,13 @@ def voice():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # CAMBIADO
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
         )
         reply = response.choices[0].message.content.strip()
     except Exception as e:
+        print("Error OpenAI:", e)
         reply = "Lo siento, hubo un error al procesar tu mensaje. Intenta más tarde."
 
     twiml = VoiceResponse()
