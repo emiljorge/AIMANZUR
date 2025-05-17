@@ -24,8 +24,9 @@ def whatsapp():
             temperature=0.6,
         )
         reply = response.choices[0].message.content.strip()
-    except Exception as e:
-        reply = "Ocurrió un error al procesar el mensaje. Intenta más tarde."
+   except Exception as e:
+    print("Error OpenAI:", e)
+    reply = "Ocurrió un error al procesar el mensaje. Intenta más tarde."
 
     twiml = MessagingResponse()
     twiml.message(reply)
