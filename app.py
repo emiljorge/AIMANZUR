@@ -6,62 +6,6 @@ from twilio.twiml.messaging_response import MessagingResponse
 app = Flask(__name__)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-def detectar_categoria(texto):
-    texto = texto.lower()
-    if "hora" in texto or "día" in texto or "consultas" in texto:
-        return "horario"
-    elif "dónde" in texto or "ubicación" in texto or "queda" in texto:
-        return "ubicacion"
-    elif "cuánto" in texto or "precio" in texto or "tarifa" in texto:
-        return "costo"
-    elif "ars" in texto or "seguro" in texto or "aseguradora" in texto:
-        return "seguros"
-    elif "rehabilitación" in texto or "terapia respiratoria" in texto:
-        return "rehabilitacion"
-    elif "broncoscopia" in texto or "procedimiento" in texto or "estudio" in texto:
-        return "procedimientos"
-    elif "envío" in texto or "resultado" in texto or "mando" in texto:
-        return "envio_resultados"
-    elif "analiza" in texto or "interpreta" in texto or "hemograma" in texto:
-        return "analisis_ia"
-    else:
-        return "otro"
-
-respuestas = {
-    "horario": """📅 Consultas:
-- Centro Médico Moderno: lunes, miércoles y viernes desde las 10:30 AM.
-- Centro Médico Dominico Cubano: martes y jueves desde las 10:30 AM.""",
-
-    "ubicacion": """📍 Ubicaciones:
-- Centro Médico Moderno: Calle Charles Sumner Esq. José López, Suite 402 – Los Prados.
-- Centro Médico Dominico Cubano: ver Google Maps.""",
-
-    "costo": """💰 Tarifas:
-- Centro Medico Moderno Moderno: 4,000 con seguro medico / 5,000 privado
-- Centro MedicoDominico Cubano: 3,500 con seguro / 4,000 privado""",
-
-    "seguros": """✅ Aceptamos todas las ARS , con algunas excepciones
-Verifica tu plan antes de asistir.""",
-
-    "rehabilitacion": """🧘‍♂️ Ofrecemos terapia respiratoria integral:
-- Ejercicios funcionales
-- Técnicas de higiene bronquial
-- Educación y seguimiento clínico""",
-
-    "procedimientos": """🔬 Procedimientos disponibles:
-- Broncoscopía
-- Espirometría
-- Estudios de sueño
-- Toracocentesis
-- Gases arteriales""",
-
-    "envio_resultados": """📤 Puedes enviar tus estudios:
-- Por WhatsApp (a este número)
-- Por correo: neumomanzur@gmail.com
-
-Aceptamos PDFs, imágenes o informes médicos.""",
-}
-
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp():
     incoming_msg = request.form.get("Body", "")
@@ -70,34 +14,63 @@ def whatsapp():
     print("Mensaje recibido:", incoming_msg)
     print("Archivo recibido:", media_url, "Tipo:", content_type)
 
+    prompt = f"""
+Eres el asistente virtual del Dr. Emil Jorge Manzur.
+
+El Dr. Manzur es Neumólogo, Intensivista, Internista y Broncoscopista Avanzado. Tiene entrenamientos en Terapia Intensiva Cardiovascular, Medicina del Sueño y Enfermedades Pulmonares Avanzadas. Estudió en UNIBE, UASD e INTEC, y realizó rotaciones en Mayo Clinic (Jacksonville) y Montefiore Medical Center.
+
+Consulta en:
+- Centro Médico Moderno (lunes, miércoles y viernes desde 10:30 AM). Google Maps: https://maps.app.goo.gl/vFRra6MtDmWadZo47
+- Centro Médico Dominico Cubano (martes y jueves desde 10:30 AM). Google Maps: https://maps.app.goo.gl/CED88MmzYmunX1Et5
+
+Costos:
+- Moderno: RD$4,000 con seguro / RD$5,000 privado
+- Dominico Cubano: RD$3,500 con seguro / RD$4,000 privado
+
+Aseguradoras aceptadas:
+ARS SeNaSa contributivo, MAPFRE Salud ARS, ARS Universal, ARS Futuro, ARS CMD, ARS Yunén, ARS Renacer, ARS Monumental, ARS Primera, APS Asmar Planes de Salud, ARS MetaSalud, ARS Asemap, ARS Reservas, WorldWide Seguros, ARS Semma, ARS Plan Salud Banco Central y ARS UASD (solo en el Dominico Cubano).
+
+Procedimientos ambulatorios:
+- Toracentesis diagnóstica: Extracción de líquido del pulmón para análisis.
+- Toracentesis terapéutica: Extracción de líquido para mejorar la respiración.
+- Pleurostomía tipo Pig Tail: Drenaje del tórax.
+- Biopsia pleural cerrada: Muestra del revestimiento del pulmón.
+- Espirometría: Medición de la función pulmonar.
+- Post-broncodilatador: Comparación antes y después del broncodilatador.
+- Caminata 6 minutos: Evaluación de esfuerzo.
+- FENO: Medición de inflamación en el asma.
+- DLCO/TLC: Capacidad de difusión y volumen pulmonar.
+- Capnografía: Evaluación del CO2 exhalado.
+
+Procedimientos en casa:
+- Polisomnografía ambulatoria: Estudio del sueño en el hogar.
+- Titraje de oxígeno nocturno: Evaluación de oxigenación nocturna.
+
+Procedimientos con ingreso:
+- Broncoscopía: Evaluación directa de vías respiratorias.
+- Biopsia de pulmón: Muestra de tejido pulmonar.
+- Intervencionismo pulmonar: Procedimientos terapéuticos avanzados.
+- Resección endobronquial con crioterapia, electrofulguración o argón plasma.
+- Extracción de cuerpos extraños.
+
+Todos los procedimientos tienen costos variables según el caso y la aseguradora.
+
+Mensaje del paciente:
+""" + incoming_msg.strip()
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.6,
+        )
+        reply = response.choices[0].message.content.strip()
+    except Exception as e:
+        print("Error OpenAI:", e)
+        reply = "Ocurrió un error al procesar tu solicitud. Intenta nuevamente más tarde."
+
     resp = MessagingResponse()
-    categoria = detectar_categoria(incoming_msg)
-
-    if categoria in respuestas:
-        reply = respuestas[categoria]
-    elif categoria == "analisis_ia" or media_url:
-        prompt = f"Eres un médico neumólogo. Resume y explica este resultado médico:\n\n'{incoming_msg}'"
-        try:
-            response = openai.chat.completions.create(
-                model="gpt-4-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.6,
-            )
-            reply = response.choices[0].message.content.strip()
-        except Exception as e:
-            print("Error OpenAI:", e)
-            reply = "Ocurrió un error al analizar tus resultados. Intenta más tarde."
-    else:
-        reply = "Hola 👋 soy el asistente del Dr. Emil Jorge Manzur. ¿Cómo puedo ayudarte?"
-
-    msg = resp.message(reply)
-
-    if categoria == "otro":
-        msg.body("Selecciona una opción:")
-        msg.add_body_button("Horarios", "INFO_HORARIOS")
-        msg.add_body_button("Ubicación", "INFO_UBICACION")
-        msg.add_body_button("Costos", "INFO_COSTOS")
-
+    resp.message(reply)
     return str(resp)
 
 @app.route("/")
