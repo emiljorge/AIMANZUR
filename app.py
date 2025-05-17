@@ -37,10 +37,10 @@ respuestas = {
 - Centro Médico Dominico Cubano: ver Google Maps.""",
 
     "costo": """💰 Tarifas:
-- Moderno: 4,000 con seguro / 5,000 privado
-- Dominico Cubano: 3,500 con seguro / 4,000 privado""",
+- Centro Medico Moderno Moderno: 4,000 con seguro medico / 5,000 privado
+- Centro MedicoDominico Cubano: 3,500 con seguro / 4,000 privado""",
 
-    "seguros": """✅ Aceptamos ARS Humano y otras aseguradoras principales.
+    "seguros": """✅ Aceptamos todas las ARS , con algunas excepciones
 Verifica tu plan antes de asistir.""",
 
     "rehabilitacion": """🧘‍♂️ Ofrecemos terapia respiratoria integral:
@@ -88,7 +88,7 @@ def whatsapp():
             print("Error OpenAI:", e)
             reply = "Ocurrió un error al analizar tus resultados. Intenta más tarde."
     else:
-        reply = "Hola 👋 soy el asistente del Dr. Emil Manzur. ¿Cómo puedo ayudarte?"
+        reply = "Hola 👋 soy el asistente del Dr. Emil Jorge Manzur. ¿Cómo puedo ayudarte?"
 
     msg = resp.message(reply)
 
@@ -105,3 +105,4 @@ def health():
     return "WhatsApp Assistant is live", 200
 
 if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
