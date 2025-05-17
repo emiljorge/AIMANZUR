@@ -19,7 +19,7 @@ def whatsapp():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",  # CAMBIADO
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
         )
@@ -42,7 +42,7 @@ def voice():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",  # CAMBIADO
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
         )
