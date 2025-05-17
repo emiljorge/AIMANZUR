@@ -10,17 +10,12 @@ def whatsapp():
     from twilio.twiml.messaging_response import MessagingResponse
 
     incoming_msg = request.form.get("Body", "")
-    sender = request.form.get("From", "")
-
     print("Mensaje recibido:", incoming_msg)
-
-    if not incoming_msg:
-        return "No message received", 400
 
     prompt = f"Eres el asistente virtual del Dr. Emil Manzur. Responde con lenguaje humano, claro y profesional al siguiente mensaje:\n\n'{incoming_msg}'"
 
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
@@ -44,7 +39,7 @@ def voice():
     prompt = f"Eres el asistente virtual del Dr. Emil Manzur. El paciente dijo: '{speech}'. Responde en tono amable, profesional y directo."
 
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
