@@ -28,19 +28,38 @@ def detectar_categoria(texto):
         return "otro"
 
 respuestas = {
-    "horario": "📅 Consultas:
+    "horario": """📅 Consultas:
 - Centro Médico Moderno: lunes, miércoles y viernes desde las 10:30 AM.
-- Centro Médico Dominico Cubano: martes y jueves desde las 10:30 AM.",
-    "ubicacion": "📍 Ubicaciones:
+- Centro Médico Dominico Cubano: martes y jueves desde las 10:30 AM.""",
+
+    "ubicacion": """📍 Ubicaciones:
 - Centro Médico Moderno: Calle Charles Sumner Esq. José López, Suite 402 – Los Prados.
-- Centro Médico Dominico Cubano: ver Google Maps.",
-    "costo": "💰 Tarifas:
+- Centro Médico Dominico Cubano: ver Google Maps.""",
+
+    "costo": """💰 Tarifas:
 - Moderno: 4,000 con seguro / 5,000 privado
-- Dominico Cubano: 3,500 con seguro / 4,000 privado",
-    "seguros": "✅ Aceptamos ARS Humano y otras aseguradoras principales. Verifica tu plan antes de asistir.",
-    "rehabilitacion": "🧘‍♂️ Ofrecemos terapia respiratoria, ejercicios funcionales, educación y seguimiento clínico.",
-    "procedimientos": "🔬 Procedimientos: broncoscopía, espirometría, toracocentesis, estudios de sueño y más.",
-    "envio_resultados": "📤 Puedes enviar estudios por WhatsApp o al correo neumomanzur@gmail.com.",
+- Dominico Cubano: 3,500 con seguro / 4,000 privado""",
+
+    "seguros": """✅ Aceptamos ARS Humano y otras aseguradoras principales.
+Verifica tu plan antes de asistir.""",
+
+    "rehabilitacion": """🧘‍♂️ Ofrecemos terapia respiratoria integral:
+- Ejercicios funcionales
+- Técnicas de higiene bronquial
+- Educación y seguimiento clínico""",
+
+    "procedimientos": """🔬 Procedimientos disponibles:
+- Broncoscopía
+- Espirometría
+- Estudios de sueño
+- Toracocentesis
+- Gases arteriales""",
+
+    "envio_resultados": """📤 Puedes enviar tus estudios:
+- Por WhatsApp (a este número)
+- Por correo: neumomanzur@gmail.com
+
+Aceptamos PDFs, imágenes o informes médicos.""",
 }
 
 @app.route("/whatsapp", methods=["POST"])
@@ -57,9 +76,7 @@ def whatsapp():
     if categoria in respuestas:
         reply = respuestas[categoria]
     elif categoria == "analisis_ia" or media_url:
-        prompt = f"Eres un médico neumólogo. Resume y explica este resultado médico:
-
-'{incoming_msg}'"
+        prompt = f"Eres un médico neumólogo. Resume y explica este resultado médico:\n\n'{incoming_msg}'"
         try:
             response = openai.chat.completions.create(
                 model="gpt-4-turbo",
@@ -88,4 +105,3 @@ def health():
     return "WhatsApp Assistant is live", 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
