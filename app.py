@@ -92,7 +92,7 @@ Es un estudio del sueño que el paciente realiza en casa: retira un equipo port�
 ⏱️ El estudio se realiza de un día para otro. Se revisan los resultados preliminares antes de definir si debe repetirse (esto ocurre en aproximadamente **5–8%** de los casos).
 
 📥 *Mensaje del paciente:*
-"""{incoming_msg.strip()}"""
+{incoming_msg.strip()}
 """
 
     try:
