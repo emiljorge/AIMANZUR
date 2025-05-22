@@ -123,16 +123,3 @@ def health():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-
-    except Exception as e:
-        print("Error OpenAI:", e)
-        resp = MessagingResponse()
-        resp.message("⚠️ Hubo un problema al procesar tu solicitud. Intenta más tarde.")
-        return str(resp)
-
-@app.route("/")
-def health():
-    return "Josefo está activo 🫁", 200
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
